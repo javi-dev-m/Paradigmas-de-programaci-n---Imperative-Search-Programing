@@ -1,0 +1,161 @@
+record Sala(nombre, capacidad, equipo, ocupaciones)
+record Solicitud(id, inicio, fin, asistentes, equipo)
+
+
+# ------------------------------------------------------------
+# Busca la primera sala que satisface la solicitud.
+# ------------------------------------------------------------
+procedure buscarSala(salas, solicitud)
+
+    every sala := !salas do {
+
+        # PUNTO 1 - GENERACIÓN DE ALTERNATIVAS
+        # Cada sala del catálogo es una alternativa de búsqueda.
+
+        if sala.capacidad < solicitud.asistentes then
+            fail
+
+        if sala.equipo ~== solicitud.equipo then
+            fail
+
+        if not disponible(sala, solicitud.inicio, solicitud.fin) then
+            fail
+
+        # PUNTO 2 - SUSPENSIÓN
+        # Se produce la sala válida como resultado.
+        # Si el contexto necesita otra alternativa, la búsqueda
+        # puede reanudarse y continuar con la siguiente sala.
+        suspend sala
+    }
+
+end
+
+
+# ------------------------------------------------------------
+# Comprueba si la sala está libre en el intervalo indicado.
+# ------------------------------------------------------------
+procedure disponible(sala, inicio, fin)
+
+    every ocupacion := !sala.ocupaciones do {
+
+        # Existe solapamiento si:
+        # inicio < fin_ocupacion Y fin > inicio_ocupacion
+
+        if inicio < ocupacion[2] & fin > ocupacion[1] then
+            fail
+    }
+
+    return
+end
+
+
+# ------------------------------------------------------------
+# Determina el motivo del rechazo.
+# ------------------------------------------------------------
+procedure motivoRechazo(salas, solicitud)
+
+    # Primero comprobamos si existe alguna sala que tenga
+    # capacidad y equipamiento adecuados.
+
+    every sala := !salas do {
+
+        if sala.capacidad >= solicitud.asistentes &
+           sala.equipo == solicitud.equipo then {
+
+            # Existe una sala compatible, por lo que si ninguna
+            # pudo ser asignada, el problema es la disponibilidad.
+
+            return "todas las salas compatibles estan ocupadas"
+        }
+    }
+
+    return "ninguna sala cumple capacidad y equipamiento"
+end
+
+
+# ------------------------------------------------------------
+# Registra una ocupación.
+# ------------------------------------------------------------
+procedure ocupar(sala, inicio, fin)
+
+    put(sala.ocupaciones, [inicio, fin])
+
+end
+
+
+# ------------------------------------------------------------
+# PROGRAMA PRINCIPAL
+# ------------------------------------------------------------
+procedure main()
+
+    salas := [
+        Sala("Sala A", 20, "proyector", []),
+        Sala("Sala B", 40, "proyector", []),
+        Sala("Sala C", 30, "computadores", []),
+        Sala("Sala D", 50, "proyector", [])
+    ]
+
+    solicitudes := [
+        Solicitud(1, 9, 11, 30, "proyector"),
+        Solicitud(2, 10, 12, 15, "proyector"),
+        Solicitud(3, 11, 13, 25, "computadores"),
+        Solicitud(4, 9, 10, 60, "proyector")
+    ]
+
+    asignaciones := []
+    rechazos := []
+
+    every solicitud := !solicitudes do {
+
+        # La expresión buscarSala tiene éxito si encuentra
+        # una alternativa y falla si no encuentra ninguna.
+
+        if sala := buscarSala(salas, solicitud) then {
+
+            ocupar(sala,
+                   solicitud.inicio,
+                   solicitud.fin)
+
+            put(asignaciones,
+                [solicitud.id, sala.nombre])
+
+            write("Solicitud ", solicitud.id,
+                  " -> ", sala.nombre)
+
+        }
+        else {
+
+            motivo := motivoRechazo(salas, solicitud)
+
+            put(rechazos,
+                [solicitud.id, motivo])
+
+            write("Solicitud ", solicitud.id,
+                  " -> RECHAZADA: ", motivo)
+        }
+    }
+
+
+    # PUNTO 3 - ESTADO IMPERATIVO
+    # Una vez encontrada una solución, se modifica el estado
+    # de la sala. Las solicitudes posteriores ven esta nueva
+    # ocupación.
+
+    write("")
+    write("=== RESUMEN ===")
+
+    write("")
+    write("Asignaciones:")
+
+    every asignacion := !asignaciones do
+        write("Solicitud ", asignacion[1],
+              " -> ", asignacion[2])
+
+    write("")
+    write("Rechazos:")
+
+    every rechazo := !rechazos do
+        write("Solicitud ", rechazo[1],
+              " -> ", rechazo[2])
+
+end
