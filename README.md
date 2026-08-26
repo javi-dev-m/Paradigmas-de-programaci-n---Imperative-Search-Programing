@@ -12,7 +12,7 @@ Este programa fue desarrollado con motivos académicos, con el objetivo de descr
 
 ---
 
-## Instalación y Compilación de Icon
+## Instalación del Compilador de Icon
 
 Para ejecutar el programa es necesario tener instalado el lenguaje de programación **Icon** y disponer del compilador `icont`.
 
@@ -24,7 +24,18 @@ https://www2.cs.arizona.edu/icon/
 
 Una vez instalado, se recomienda comprobar que el compilador `icont` esté disponible desde la terminal.
 
-En Windows, abra una ventana de **CMD** y ejecute:
+En Windows, agregue Icon como una variable en PATH.
 
-```text
-icont
+Luego, abra una ventana de **CMD** y ejecute: icont
+
+Si Windows responde con información del programa o con un mensaje relacionado con su uso, significa que icont está disponible.
+
+En Linux, abra una terminal y ejecute: icont
+
+Si aparece "command not found: icont" entonces hubo un error en la instalación.
+
+##  Compilación de Icon
+
+Para compilar el programa, abra una terminal en la ruta del programa. luego ejecute: icont nombre_del_programa.icn
+
+Finalmente, para ejecutar el programa, ejecute en la terminal: icont programa.icn -x
