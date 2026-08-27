@@ -13,21 +13,24 @@ procedure buscarSala(salas, solicitud)
         # Cada sala del catálogo es una alternativa de búsqueda.
 
         if sala.capacidad < solicitud.asistentes then
+            write("Solicitud rechazada: capacidad insuficiente")
             fail
 
         if sala.equipo ~== solicitud.equipo then
+            write("Solicitud rechazada: equipo insuficiente")
             fail
 
         if not disponible(sala, solicitud.inicio, solicitud.fin) then
+            write("Solicitud rechazada: horario no disponible")
             fail
 
         # PUNTO 2 - SUSPENSIÓN
         # Se produce la sala válida como resultado.
         # Si el contexto necesita otra alternativa, la búsqueda
         # puede reanudarse y continuar con la siguiente sala.
+        write("Solicitud Aceptada")
         suspend sala
     }
-
 end
 
 
@@ -44,6 +47,7 @@ procedure disponible(sala, inicio, fin)
     }
 
     return
+    
 end
 
 
@@ -86,6 +90,8 @@ end
 # ------------------------------------------------------------
 procedure main()
 
+    write("1. Entrando a main")
+
     salas := [
         Sala("Sala A", 20, "proyector", list()),
         Sala("Sala B", 40, "proyector", list()),
@@ -109,9 +115,11 @@ procedure main()
 
         sala := buscarSala(salas, solicitud)
 
-        write("5. Resultado obtenido")
+        # PUNTO 3 - MODIFICACIÓN DEL ESTADO
+        # Una vez encontrada una sala válida, se registra
+        # su nueva ocupación para las siguientes solicitudes.
     }
 
-    write("6. Fin")
+    write("Fin")
 
 end
