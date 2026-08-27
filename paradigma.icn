@@ -29,6 +29,7 @@ procedure buscarSala(salas, solicitud)
         # Si el contexto necesita otra alternativa, la búsqueda
         # puede reanudarse y continuar con la siguiente sala.
         write("Solicitud Aceptada")
+        ocupar(sala, inicio, fin)
         suspend sala
     }
 end
@@ -48,30 +49,6 @@ procedure disponible(sala, inicio, fin)
 
     return
     
-end
-
-
-# ------------------------------------------------------------
-# Determina el motivo del rechazo.
-# ------------------------------------------------------------
-procedure motivoRechazo(salas, solicitud)
-
-    # Primero comprobamos si existe alguna sala que tenga
-    # capacidad y equipamiento adecuados.
-
-    every sala := !salas do {
-
-        if sala.capacidad >= solicitud.asistentes &
-           sala.equipo == solicitud.equipo then {
-
-            # Existe una sala compatible, por lo que si ninguna
-            # pudo ser asignada, el problema es la disponibilidad.
-
-            return "todas las salas compatibles estan ocupadas"
-        }
-    }
-
-    return "ninguna sala cumple capacidad y equipamiento"
 end
 
 
@@ -111,7 +88,7 @@ procedure main()
     write("3. Solicitudes creadas")
 
     every solicitud := !solicitudes do {
-        write("4. Procesando solicitud ", solicitud.id)
+        write("Procesando solicitud ", solicitud.id)
 
         sala := buscarSala(salas, solicitud)
 
