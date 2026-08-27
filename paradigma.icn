@@ -37,10 +37,8 @@ end
 procedure disponible(sala, inicio, fin)
 
     every ocupacion := !sala.ocupaciones do {
-
         # Existe solapamiento si:
         # inicio < fin_ocupacion Y fin > inicio_ocupacion
-
         if inicio < ocupacion[2] & fin > ocupacion[1] then
             fail
     }
@@ -89,11 +87,13 @@ end
 procedure main()
 
     salas := [
-        Sala("Sala A", 20, "proyector", []),
-        Sala("Sala B", 40, "proyector", []),
-        Sala("Sala C", 30, "computadores", []),
-        Sala("Sala D", 50, "proyector", [])
+        Sala("Sala A", 20, "proyector", list()),
+        Sala("Sala B", 40, "proyector", list()),
+        Sala("Sala C", 30, "computadores", list()),
+        Sala("Sala D", 50, "proyector", list())
     ]
+
+    write("2. Salas creadas")
 
     solicitudes := [
         Solicitud(1, 9, 11, 30, "proyector"),
@@ -102,60 +102,16 @@ procedure main()
         Solicitud(4, 9, 10, 60, "proyector")
     ]
 
-    asignaciones := []
-    rechazos := []
+    write("3. Solicitudes creadas")
 
     every solicitud := !solicitudes do {
+        write("4. Procesando solicitud ", solicitud.id)
 
-        # La expresión buscarSala tiene éxito si encuentra
-        # una alternativa y falla si no encuentra ninguna.
+        sala := buscarSala(salas, solicitud)
 
-        if sala := buscarSala(salas, solicitud) then {
-
-            ocupar(sala,
-                   solicitud.inicio,
-                   solicitud.fin)
-
-            put(asignaciones,
-                [solicitud.id, sala.nombre])
-
-            write("Solicitud ", solicitud.id,
-                  " -> ", sala.nombre)
-
-        }
-        else {
-
-            motivo := motivoRechazo(salas, solicitud)
-
-            put(rechazos,
-                [solicitud.id, motivo])
-
-            write("Solicitud ", solicitud.id,
-                  " -> RECHAZADA: ", motivo)
-        }
+        write("5. Resultado obtenido")
     }
 
-
-    # PUNTO 3 - ESTADO IMPERATIVO
-    # Una vez encontrada una solución, se modifica el estado
-    # de la sala. Las solicitudes posteriores ven esta nueva
-    # ocupación.
-
-    write("")
-    write("=== RESUMEN ===")
-
-    write("")
-    write("Asignaciones:")
-
-    every asignacion := !asignaciones do
-        write("Solicitud ", asignacion[1],
-              " -> ", asignacion[2])
-
-    write("")
-    write("Rechazos:")
-
-    every rechazo := !rechazos do
-        write("Solicitud ", rechazo[1],
-              " -> ", rechazo[2])
+    write("6. Fin")
 
 end
